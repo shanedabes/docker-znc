@@ -35,13 +35,11 @@ jobs:
         with:
           version: latest
 
-      # - name: Login to registry
-      #   run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login registry.hub.docker.com -u shanedabes --password-stdin
+      - name: Login to registry
+        run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u shanedabes --password-stdin
 
       - name: Build and push
         run: |
-          echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login registry.hub.docker.com -u shanedabes --password-stdin
-
           IMAGE_ID=$IMAGE_NAME
 
           # Strip git ref prefix from version
