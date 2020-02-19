@@ -1,0 +1,11 @@
+#!/usr/bin/with-contenv sh
+
+umask 022
+
+set -e
+
+/bin/zncconfer > /config/configs/znc.conf
+
+exec \
+        s6-setuidgid abc /usr/bin/znc -d /config \
+        --foreground
