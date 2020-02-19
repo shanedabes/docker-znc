@@ -40,7 +40,7 @@ jobs:
 
     steps:
       - name: Login to registry
-        run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login registry.hub.docker.com -u shane --password-stdin
+        run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login registry.hub.docker.com -u shanedabes --password-stdin
 
       - name: Push image
         run: |
