@@ -40,6 +40,8 @@ jobs:
 
       - name: Build and push
         run: |
+          cat ~/.docker/config.json
+
           IMAGE_ID=$IMAGE_NAME
 
           # Strip git ref prefix from version
