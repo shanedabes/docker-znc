@@ -40,8 +40,6 @@ jobs:
 
       - name: Build and push
         run: |
-          cat ~/.docker/config.json
-
           IMAGE_ID=$IMAGE_NAME
 
           # Strip git ref prefix from version
@@ -59,5 +57,5 @@ jobs:
           docker buildx build \
             --push \
             --platform linux/amd64,linux/arm,linux/arm64/v8 \
-            --tag ${IMAGE_ID}:${VERSION} \
+            --tag shanedabes/${IMAGE_ID}:${VERSION} \
             --file ./Dockerfile .
