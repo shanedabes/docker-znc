@@ -19,6 +19,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v1
 
+  push:
+    needs: build
+
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
       - name: Set up Docker Buildx
         id: buildx
         uses: crazy-max/ghaction-docker-buildx@v1
@@ -33,13 +43,6 @@ jobs:
             --tag image \
             --file ./Dockerfile .
 
-  push:
-    needs: build
-
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push'
-
-    steps:
       - name: Login to registry
         run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login registry.hub.docker.com -u shanedabes --password-stdin
 
@@ -63,19 +66,3 @@ jobs:
 
           docker tag image $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION
-
-      # - name: Dockerize
-      #   if: success()
-      #   uses: manusa/actions-publish-docker@master
-      #   with:
-      #     name: shanedabes/znc
-      #     username: shanedabes
-      #     password: ${{ secrets.DOCKER_HUB_PASSWORD }}
-      #     tag script: |
-      #       return context.ref
-      #         .replace('refs/heads/', '')
-      #         .replace('refs/tags/', '')
-      #         .replace('refs/pull/', '')
-      #         .replace(/\//g, '_')
-      #         .replace(/#/g, '');
-      #     registry: registry.hub.docker.com
