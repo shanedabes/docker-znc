@@ -30,7 +30,7 @@ jobs:
           docker buildx build \
             --platform linux/amd64,linux/arm,linux/arm64/v8 \
             --output "type=image,push=false" \
-            --tag "${IMAGE_NAME}" \
+            --tag image \
             --file ./Dockerfile .
 
   push:
@@ -59,7 +59,7 @@ jobs:
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
 
-          docker tag $IMAGE_ID $IMAGE_ID:$VERSION
+          docker tag image $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION
 
       # - name: Dockerize
