@@ -35,21 +35,11 @@ jobs:
         with:
           version: latest
 
-      - name: Run Buildx
-        run: |
-          docker buildx build \
-            --platform linux/amd64,linux/arm,linux/arm64/v8 \
-            --output "type=image,push=false" \
-            --tag image \
-            --file ./Dockerfile .
-
       - name: Login to registry
         run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login registry.hub.docker.com -u shanedabes --password-stdin
 
       - name: Push image
         run: |
-          docker images
-
           IMAGE_ID=$IMAGE_NAME
 
           # Strip git ref prefix from version
@@ -66,3 +56,9 @@ jobs:
 
           docker tag image $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION
+
+          docker buildx build \
+            --push \
+            --platform linux/amd64,linux/arm,linux/arm64/v8 \
+            --tag ${IMAGE_ID}:${VERSION} \
+            --file ./Dockerfile .
