@@ -45,6 +45,8 @@ jobs:
 
       - name: Push image
         run: |
+          docker images
+
           IMAGE_ID=$IMAGE_NAME
 
           # Strip git ref prefix from version
