@@ -32,7 +32,7 @@ jobs:
         uses: manusa/actions-publish-docker@master
         with:
           name: shanedabes/znc
-          username: ${{ secrets.DOCKER_HUB_USER }}
+          username: shanedabes
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
           tag script: |
             return context.ref
