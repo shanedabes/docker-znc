@@ -3,13 +3,18 @@ name: buildx
 on:
   pull_request:
     branches: master
+
   push:
     branches: master
     tags:
 
+env:
+  IMAGE_NAME: znc
+
 jobs:
-  buildx:
+  build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v1
@@ -27,18 +32,47 @@ jobs:
             --output "type=image,push=false" \
             --file ./Dockerfile .
 
-      - name: Dockerize
-        if: success()
-        uses: manusa/actions-publish-docker@master
-        with:
-          name: shanedabes/znc
-          username: shanedabes
-          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
-          tag script: |
-            return context.ref
-              .replace('refs/heads/', '')
-              .replace('refs/tags/', '')
-              .replace('refs/pull/', '')
-              .replace(/\//g, '_')
-              .replace(/#/g, '');
-          registry: registry.hub.docker.com
+  push:
+    needs: build
+
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+
+    steps:
+      - name: Login to registry
+        run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login registry.hub.docker.com -u shane --password-stdin
+
+      - name: Push image
+        run: |
+          IMAGE_ID=$IMAGE_NAME
+
+          # Strip git ref prefix from version
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+
+          # Strip "v" prefix from tag name
+          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+
+          # Use Docker `latest` tag convention
+          [ "$VERSION" == "master" ] && VERSION=latest
+
+          echo IMAGE_ID=$IMAGE_ID
+          echo VERSION=$VERSION
+
+          docker tag image $IMAGE_ID:$VERSION
+          docker push $IMAGE_ID:$VERSION
+
+      # - name: Dockerize
+      #   if: success()
+      #   uses: manusa/actions-publish-docker@master
+      #   with:
+      #     name: shanedabes/znc
+      #     username: shanedabes
+      #     password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+      #     tag script: |
+      #       return context.ref
+      #         .replace('refs/heads/', '')
+      #         .replace('refs/tags/', '')
+      #         .replace('refs/pull/', '')
+      #         .replace(/\//g, '_')
+      #         .replace(/#/g, '');
+      #     registry: registry.hub.docker.com
