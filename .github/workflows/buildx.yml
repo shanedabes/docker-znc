@@ -7,6 +7,7 @@ on:
   push:
     branches: master
     tags:
+      - '*'
 
 env:
   IMAGE_NAME: znc
